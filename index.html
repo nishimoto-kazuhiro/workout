@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="ja" class="h-full bg-slate-950 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>カメラ撮影トレーニング Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fff7ed',
+              500: '#f97316',
+              600: '#ea580c',
+              700: '#c2410c',
+            },
+            accent: {
+              500: '#3b82f6',
+              600: '#2563eb',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    
+    /* Smooth transitions for SVGs */
+    .ring-prog {
+      transition: stroke-dashoffset 0.2s linear, stroke 0.3s ease;
+      transform-origin: center;
+      transform: rotate(-90deg);
+    }
+    
+    /* Scrollbar hiding for tab header */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    /* Subtle glowing animations */
+    @keyframes pulse-subtle {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(0.98); }
+    }
+    .animate-pulse-subtle { animation: pulse-subtle 2s infinite ease-in-out; }
+  </style>
+</head>
+<body class="h-full flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-30 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 shadow-md">
+    <div class="max-w-3xl mx-auto flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="p-2 bg-gradient-to-tr from-brand-600 to-amber-500 rounded-xl shadow-lg shadow-brand-500/20">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h0.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-slate-100 leading-tight">撮影筋力トレ PRO <span class="text-xs font-normal text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-800/60 ml-1">Phase 2 強化版</span></h1>
+          <p class="text-xs text-slate-400">3.5kg+機材保持 / 高負荷モード / 自宅</p>
+        </div>
+      </div>
+
+      <!-- Sound & Settings Toggle Button -->
+      <button id="sound-toggle" onclick="toggleSound()" class="p-2 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white transition-colors flex items-center gap-1 text-xs">
+        <svg id="sound-icon-on" class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072M18.364 5.636a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"/>
+        </svg>
+        <svg id="sound-icon-off" class="w-4 h-4 text-slate-500 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+        </svg>
+        <span id="sound-label" class="hidden sm:inline">Sound ON</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs Header -->
+  <nav class="bg-slate-900 border-b border-slate-800">
+    <div class="max-w-3xl mx-auto no-scrollbar overflow-x-auto flex px-4 space-x-1 justify-start md:justify-center">
+      <button onclick="showPane('train', this)" class="tab-btn active text-xs font-semibold px-4 py-3 border-b-2 border-brand-500 text-brand-500 whitespace-nowrap transition-all flex items-center gap-1.5">
+        <span>🏋️ メイン (月・水)</span>
+      </button>
+      <button onclick="showPane('light', this)" class="tab-btn text-xs font-medium px-4 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap transition-all flex items-center gap-1.5">
+        <span>🧘 軽め (金)</span>
+      </button>
+      <button onclick="showPane('schedule', this)" class="tab-btn text-xs font-medium px-4 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap transition-all flex items-center gap-1.5">
+        <span>📅 週間プロ</span>
+      </button>
+      <button onclick="showPane('phases', this)" class="tab-btn text-xs font-medium px-4 py-3 border-b-2 border-transparent text-slate-400 hover:text-slate-200 whitespace-nowrap transition-all flex items-center gap-1.5">
+        <span>📈 3ヶ月計画</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Session Overview & Progress Bar -->
+  <div class="bg-slate-900/60 border-b border-slate-800 py-2.5 px-4">
+    <div class="max-w-3xl mx-auto flex items-center justify-between text-xs">
+      <span class="text-slate-400 font-medium">本日のセッション進捗:</span>
+      <span id="overall-progress-text" class="text-brand-500 font-bold">0 / 0 完了</span>
+    </div>
+    <div class="max-w-3xl mx-auto w-full bg-slate-800 rounded-full h-1.5 mt-1.5 overflow-hidden">
+      <div id="overall-progress-bar" class="bg-gradient-to-r from-brand-500 to-amber-400 h-1.5 rounded-full w-0 transition-all duration-300"></div>
+    </div>
+  </div>
+
+  <!-- Main Content Container -->
+  <main class="flex-1 overflow-y-auto px-4 py-4">
+    <div class="max-w-3xl mx-auto space-y-4">
+
+      <!-- ==================== PANE 1: MAIN TRAINING ==================== -->
+      <div id="pane-train" class="pane block space-y-4">
+        
+        <div class="flex items-center justify-between pt-1">
+          <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">1. 体幹ブレ補正（高負荷）</span>
+          <span class="text-[10px] bg-blue-950 text-blue-400 border border-blue-800 px-2 py-0.5 rounded-full font-medium">姿勢・手ブレ抑止</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Plank -->
+          <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition-colors">
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-100 flex items-center gap-1.5">
+                  プランク (強化版)
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">45秒 × 3セット | 休 20秒</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">体幹</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              肘とつま先で体を支持。45秒間に延長し、超望遠レンズ保持時の腰沈みと軸のブレを根絶。
+            </p>
+            <div class="timer-wrap mt-3 pt-3 border-t border-slate-800/80" id="tw-plank-main"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">2. 肩・ホールド力強化（1kg〜ダンベル推奨）</span>
+          <span class="text-[10px] bg-purple-950 text-purple-400 border border-purple-800 px-2 py-0.5 rounded-full font-medium">機材保持力UP</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Front Raise -->
+          <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition-colors">
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-100">フロントレイズ</h2>
+                <p class="text-xs text-slate-400 mt-0.5">20回 × 3セット | 休 20秒（ダンベル 1〜2kg）</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">三角筋前部</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              前方へ水平まで上げる。回数を20回に増やし、重いレンズを前方に構え続けるスタミナを養います。
+            </p>
+            <div class="interval-wrap mt-3 pt-3 border-t border-slate-800/80" id="iw-front-main"></div>
+          </div>
+
+          <!-- Side Raise -->
+          <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition-colors">
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-100">サイドレイズ</h2>
+                <p class="text-xs text-slate-400 mt-0.5">20回 × 3セット | 休 20秒（ダンベル 1〜2kg）</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">三角筋中部</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              横に90度上げる。縦位置構えやアングル変更時の肩周りのブレを完全に防止します。
+            </p>
+            <div class="interval-wrap mt-3 pt-3 border-t border-slate-800/80" id="iw-side-main"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">3. 前腕・上腕（レンズ抱え込み & グリップ）</span>
+          <span class="text-[10px] bg-amber-950 text-amber-400 border border-amber-800 px-2 py-0.5 rounded-full font-medium">アームホールド</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- NEW: Dumbbell Curl -->
+          <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition-colors border-l-4 border-l-amber-500">
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-100 flex items-center gap-1.5">
+                  ダンベルカール <span class="text-[10px] bg-amber-500/20 text-amber-300 px-1.5 py-0.5 rounded">NEW</span>
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">20回 × 3セット | 休 20秒（ダンベル 2〜4kg）</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">上腕二頭筋</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              肘の位置を固定し腕を曲げ伸ばし。脇を締め重いレンズを下から包み込む「腕の引きつけ力」をダイレクトに鍛えます。
+            </p>
+            <div class="interval-wrap mt-3 pt-3 border-t border-slate-800/80" id="iw-biceps-main"></div>
+          </div>
+
+          <!-- Wall Push Up -->
+          <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition-colors">
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-100">壁押しプッシュアップ (高回数)</h2>
+                <p class="text-xs text-slate-400 mt-0.5">20回 × 3セット | 休 20秒</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">上腕三頭筋・胸部</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              距離を少し広げて負荷アップ。大口径レンズを底面から支え続ける二の腕のベースを作ります。
+            </p>
+            <div class="interval-wrap mt-3 pt-3 border-t border-slate-800/80" id="iw-push-main"></div>
+          </div>
+
+          <!-- Towel Wringing -->
+          <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition-colors md:col-span-2">
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-100">タオル絞り (高時間)</h2>
+                <p class="text-xs text-slate-400 mt-0.5">45秒 × 3セット | 休 20秒</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">前腕・握力</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              45秒間休まず絞り続ける。指先から前腕全体の握力を極限まで強化し、長時間の片手ホールドやリング操作時の疲労を防ぎます。
+            </p>
+            <div class="timer-wrap mt-3 pt-3 border-t border-slate-800/80" id="tw-towel-main"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <span class="text-xs font-bold tracking-wider text-slate-400 uppercase">4. 背中・姿勢（巻き肩補正）</span>
+          <span class="text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded-full font-medium">疲労軽減</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <!-- Wall Angel -->
+          <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm hover:border-slate-700 transition-colors md:col-span-2">
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <h2 class="text-base font-bold text-slate-100">ウォールアングル</h2>
+                <p class="text-xs text-slate-400 mt-0.5">15回 × 2セット | 休 20秒</p>
+              </div>
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">背中・菱形筋</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+              肩甲骨をしっかり引き寄せて上下。ファインダー覗き込みによる猫背・肩こりをリセット。
+            </p>
+            <div class="interval-wrap mt-3 pt-3 border-t border-slate-800/80" id="iw-wall-main"></div>
+          </div>
+        </div>
+
+        <button onclick="resetPage('main')" class="w-full py-3 px-4 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white hover:border-slate-700 text-xs font-semibold transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          このページのタイマーをすべてリセット
+        </button>
+      </div>
+
+      <!-- ==================== PANE 2: LIGHT TRAINING ==================== -->
+      <div id="pane-light" class="pane hidden space-y-4">
+        
+        <div class="p-3 bg-emerald-950/40 border border-emerald-800/50 rounded-2xl flex items-center gap-3">
+          <span class="text-2xl">🌱</span>
+          <p class="text-xs text-emerald-300 leading-relaxed">
+            金曜日は「リカバリー＆軽めの刺激」の日です。翌週末の長時間撮影に備えて疲労を残さず体幹を維持します。
+          </p>
+        </div>
+
+        <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <h2 class="text-base font-bold text-slate-100">プランク (軽め)</h2>
+              <p class="text-xs text-slate-400 mt-0.5">30秒 × 2セット | 休 20秒</p>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-blue-500/10 text-blue-400 border border-blue-500/20">体幹</span>
+          </div>
+          <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+            2セットのみで無理なく体幹のテンションを維持。
+          </p>
+          <div class="timer-wrap mt-3 pt-3 border-t border-slate-800/80" id="tw-plank-light"></div>
+        </div>
+
+        <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <h2 class="text-base font-bold text-slate-100">タオル絞り</h2>
+              <p class="text-xs text-slate-400 mt-0.5">30秒 × 3セット | 休 20秒</p>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">前腕・握力</span>
+          </div>
+          <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+            前腕の持久力をキープ。リラックスして実施しましょう。
+          </p>
+          <div class="timer-wrap mt-3 pt-3 border-t border-slate-800/80" id="tw-towel-light"></div>
+        </div>
+
+        <div class="ex-card bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm">
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <h2 class="text-base font-bold text-slate-100">肩まわしコンディショニング</h2>
+              <p class="text-xs text-slate-400 mt-0.5">前後 各10回（タイマーなし）</p>
+            </div>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">柔軟性</span>
+          </div>
+          <p class="text-xs text-slate-300 mt-2.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 leading-relaxed">
+            両肩を大きく前回し10回、後ろ回し10回。肩甲骨の可動域を広げ血流を促進します。
+          </p>
+        </div>
+
+        <button onclick="resetPage('light')" class="w-full py-3 px-4 rounded-xl border border-slate-800 bg-slate-900 text-slate-400 hover:text-white hover:border-slate-700 text-xs font-semibold transition-all shadow-sm active:scale-[0.99] flex items-center justify-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          このページのタイマーをすべてリセット
+        </button>
+      </div>
+
+      <!-- ==================== PANE 3: SCHEDULE ==================== -->
+      <div id="pane-schedule" class="pane hidden space-y-4">
+        
+        <!-- Week Grid -->
+        <div class="grid grid-cols-7 gap-2 pt-1">
+          <div class="bg-brand-950/60 border border-brand-500/40 rounded-xl p-2.5 text-center">
+            <span class="text-xs text-slate-400 block">月</span>
+            <span class="text-xs font-bold text-brand-400 mt-1 block">メイン</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-center opacity-60">
+            <span class="text-xs text-slate-500 block">火</span>
+            <span class="text-xs font-semibold text-slate-400 mt-1 block">休息</span>
+          </div>
+          <div class="bg-brand-950/60 border border-brand-500/40 rounded-xl p-2.5 text-center">
+            <span class="text-xs text-slate-400 block">水</span>
+            <span class="text-xs font-bold text-brand-400 mt-1 block">メイン</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-center opacity-60">
+            <span class="text-xs text-slate-500 block">木</span>
+            <span class="text-xs font-semibold text-slate-400 mt-1 block">休息</span>
+          </div>
+          <div class="bg-emerald-950/60 border border-emerald-500/40 rounded-xl p-2.5 text-center">
+            <span class="text-xs text-slate-400 block">金</span>
+            <span class="text-xs font-bold text-emerald-400 mt-1 block">軽め</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-center opacity-60">
+            <span class="text-xs text-slate-500 block">土</span>
+            <span class="text-xs font-semibold text-slate-400 mt-1 block">撮影</span>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-center opacity-60">
+            <span class="text-xs text-slate-500 block">日</span>
+            <span class="text-xs font-semibold text-slate-400 mt-1 block">撮影</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+          <h2 class="text-sm font-bold text-slate-200 border-b border-slate-800 pb-2">撮影者のための効率化ポイント</h2>
+          
+          <div class="flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-brand-500/10 text-brand-400 shrink-0 mt-0.5">💡</div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>ダンベルカールとホールドの関係:</strong> ダンベルカールで肘関節の保持力（上腕二頭筋）を強化すると、超望遠レンズを長時間胸元に引きつけて固定する姿勢が劇的に楽になります。
+            </p>
+          </div>
+
+          <div class="flex items-start gap-3">
+            <div class="p-2 rounded-lg bg-brand-500/10 text-brand-400 shrink-0 mt-0.5">⏰</div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              <strong>継続のコツ:</strong> 帰宅後すぐや、お風呂に入る直前に時間を固定すると習慣化しやすくなります。
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== PANE 4: PHASES ==================== -->
+      <div id="pane-phases" class="pane hidden space-y-4">
+        
+        <!-- Phase 1 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-2 h-full bg-brand-500"></div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-bold text-brand-400">📘 Phase 1: 慣らし・フォーム定着</h3>
+            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md font-mono">1〜4週目</span>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-300">
+            <p><strong>目標:</strong> 正しいフォームを覚え習慣化する</p>
+            <p><strong>負荷:</strong> ペットボトル500ml / プランク 20〜30秒</p>
+            <p><strong>達成条件:</strong> 週3回を4週間継続できたらPhase 2へ</p>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-2 h-full bg-amber-500"></div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-bold text-amber-400">📙 Phase 2: 筋持久力強化期</h3>
+            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md font-mono">5〜8週目</span>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-300">
+            <p><strong>目標:</strong> 3.5kg機材を連続保持しても腕が震えない</p>
+            <p><strong>負荷:</strong> ペットボトル1L / プランク 45秒</p>
+            <p><strong>達成条件:</strong> 撮影後の肩・腰の疲労感が大幅軽減</p>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-2 h-full bg-emerald-500"></div>
+          <div class="flex justify-between items-center mb-2">
+            <h3 class="text-sm font-bold text-emerald-400">📗 Phase 3: 安定・長丁場対応</h3>
+            <span class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md font-mono">9〜12週目</span>
+          </div>
+          <div class="space-y-1.5 text-xs text-slate-300">
+            <p><strong>目標:</strong> 終日イベント・スポーツ撮影でもブレない</p>
+            <p><strong>負荷:</strong> ペットボトル1.5L / プランク 60秒</p>
+            <p><strong>達成条件:</strong> 一日中構え続けても集中力が途切れない</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    // ─── AUDIO ENGINE (Web Audio API) ─────────────────────────
+    let audioCtx = null;
+    let soundEnabled = true;
+
+    function initAudio() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+    }
+
+    function playBeep(freq = 880, duration = 0.15, type = 'sine') {
+      if (!soundEnabled) return;
+      initAudio();
+      if (!audioCtx) return;
+
+      try {
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        
+        gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        console.warn('Audio play failed:', e);
+      }
+    }
+
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      document.getElementById('sound-icon-on').classList.toggle('hidden', !soundEnabled);
+      document.getElementById('sound-icon-off').classList.toggle('hidden', soundEnabled);
+      document.getElementById('sound-label').innerText = soundEnabled ? 'Sound ON' : 'Mute';
+      if (soundEnabled) playBeep(660, 0.1);
+    }
+
+    function vibrate(pattern) {
+      if (navigator.vibrate) {
+        try { navigator.vibrate(pattern || [150, 50, 150]); } catch (e) {}
+      }
+    }
+
+    // ─── TAB NAVIGATION ─────────────────────────────────────────
+    function showPane(name, btn) {
+      document.querySelectorAll('.pane').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('border-brand-500', 'text-brand-500', 'active', 'font-semibold');
+        b.classList.add('border-transparent', 'text-slate-400', 'font-medium');
+      });
+
+      document.getElementById('pane-' + name).classList.remove('hidden');
+      btn.classList.add('border-brand-500', 'text-brand-500', 'active', 'font-semibold');
+      btn.classList.remove('border-transparent', 'text-slate-400', 'font-medium');
+      updateOverallProgress();
+    }
+
+    // ─── RING SVG GENERATOR ─────────────────────────────────────
+    const R = 26, CIRC = 2 * Math.PI * R;
+    function ringHTML(id, frac, phase) {
+      const offset = CIRC * (1 - frac);
+      let colorClass = 'stroke-brand-500';
+      if (phase === 'rest') colorClass = 'stroke-amber-500';
+      if (phase === 'done') colorClass = 'stroke-emerald-500';
+
+      return `
+        <svg class="w-16 h-16 ring-svg shrink-0" viewBox="0 0 64 64">
+          <circle class="fill-none stroke-slate-800" cx="32" cy="32" r="${R}" stroke-width="5"/>
+          <circle class="fill-none ring-prog ${colorClass}" cx="32" cy="32" r="${R}" stroke-width="5"
+            stroke-dasharray="${CIRC}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+        </svg>
+      `;
+    }
+
+    // ─── TIMED EXERCISES ────────────────────────────────────────
+    // 1ヶ月継続に伴い時間を30秒 -> 45秒に強度拡張
+    const timedConfigs = {
+      'tw-plank-main':  { work: 45, rest: 20, sets: 3 },
+      'tw-towel-main':  { work: 45, rest: 20, sets: 3 },
+      'tw-plank-light': { work: 30, rest: 20, sets: 2 },
+      'tw-towel-light': { work: 30, rest: 20, sets: 3 },
+    };
+    const timedState = {};
+
+    function timedInit(id) {
+      const c = timedConfigs[id];
+      if (!timedState[id]) {
+        timedState[id] = { phase: 'idle', remaining: c.work, set: 0, interval: null, targetTime: null };
+      }
+    }
+
+    function timedRender(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const c = timedConfigs[id];
+      const s = timedState[id];
+      const totalSets = c.sets;
+      const isDone = s.set >= totalSets;
+
+      let phaseLabel = '', labelClass = 'text-slate-400';
+      if (isDone)              { phaseLabel = '🎉 完了！'; labelClass = 'text-emerald-400 font-bold'; }
+      else if (s.phase==='work') { phaseLabel = '🔥 運動中'; labelClass = 'text-brand-500 font-bold'; }
+      else if (s.phase==='rest') { phaseLabel = '☕ インターバル'; labelClass = 'text-amber-400 font-bold'; }
+      else                     { phaseLabel = '準備完了'; }
+
+      let frac = 1;
+      if (!isDone && s.phase === 'work') frac = s.remaining / c.work;
+      if (!isDone && s.phase === 'rest') frac = s.remaining / c.rest;
+
+      const mm = String(Math.floor(s.remaining / 60)).padStart(2,'0');
+      const ss2 = String(s.remaining % 60).padStart(2,'0');
+      const timeStr = isDone ? '00:00' : `${mm}:${ss2}`;
+
+      let dots = '';
+      for (let i = 0; i < totalSets; i++) {
+        let dc = 'bg-slate-800';
+        if (i < s.set) dc = 'bg-brand-500';
+        else if (i === s.set && s.phase === 'rest') dc = 'bg-amber-500 animate-pulse';
+        dots += `<div class="w-2.5 h-2.5 rounded-full ${dc} transition-colors"></div>`;
+      }
+
+      let btns = '';
+      if (isDone) {
+        btns = `<button onclick="timedReset('${id}')" class="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-transform active:scale-95 shadow">もう1周行う</button>`;
+      } else if (s.phase === 'idle') {
+        btns = `<button onclick="timedStart('${id}')" class="w-full py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs transition-transform active:scale-95 shadow">スタート</button>`;
+      } else if (s.interval) {
+        btns = `
+          <button onclick="timedPause('${id}')" class="flex-1 py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs transition-transform active:scale-95 border border-slate-700">一時停止</button>
+          <button onclick="timedReset('${id}')" class="py-2 px-3 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-400 font-bold text-xs transition-transform active:scale-95 border border-rose-800/50">リセット</button>
+        `;
+      } else {
+        btns = `
+          <button onclick="timedStart('${id}')" class="flex-1 py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs transition-transform active:scale-95">再開</button>
+          <button onclick="timedReset('${id}')" class="py-2 px-3 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-400 font-bold text-xs transition-transform active:scale-95 border border-rose-800/50">リセット</button>
+        `;
+      }
+
+      el.innerHTML = `
+        <div class="flex items-center justify-between text-xs mb-2">
+          <span class="${labelClass}">${phaseLabel}</span>
+          <span class="text-slate-400 font-mono">セット ${Math.min(s.set + (s.phase==='work'||s.phase==='rest'?1:0), totalSets)} / ${totalSets}</span>
+        </div>
+        <div class="flex items-center gap-3 mb-3">
+          ${ringHTML(id, frac, isDone ? 'done' : s.phase)}
+          <div class="flex-1">
+            <div class="text-2xl font-black font-mono tracking-tight text-slate-100">${timeStr}</div>
+            <div class="flex gap-1.5 mt-1.5">${dots}</div>
+          </div>
+        </div>
+        <div class="flex gap-2">${btns}</div>
+      `;
+
+      updateOverallProgress();
+    }
+
+    function timedStart(id) {
+      initAudio();
+      const c = timedConfigs[id];
+      const s = timedState[id];
+
+      if (s.interval) clearInterval(s.interval);
+
+      if (s.phase === 'idle') {
+        s.phase = 'work';
+        s.remaining = c.work;
+        playBeep(880, 0.15);
+      }
+
+      s.targetTime = Date.now() + (s.remaining * 1000);
+
+      s.interval = setInterval(() => {
+        const now = Date.now();
+        const diff = Math.max(0, Math.ceil((s.targetTime - now) / 1000));
+
+        if (diff !== s.remaining) {
+          s.remaining = diff;
+
+          if (s.remaining <= 0) {
+            if (s.phase === 'work') {
+              s.set++;
+              vibrate([200, 80, 200]);
+              if (s.set >= c.sets) {
+                clearInterval(s.interval);
+                s.interval = null;
+                s.phase = 'done';
+                s.remaining = 0;
+                playBeep(1200, 0.3, 'triangle');
+              } else {
+                s.phase = 'rest';
+                s.remaining = c.rest;
+                s.targetTime = Date.now() + (s.remaining * 1000);
+                playBeep(440, 0.2);
+              }
+            } else if (s.phase === 'rest') {
+              vibrate([100, 50, 300]);
+              s.phase = 'work';
+              s.remaining = c.work;
+              s.targetTime = Date.now() + (s.remaining * 1000);
+              playBeep(880, 0.2);
+            }
+          }
+          timedRender(id);
+        }
+      }, 100);
+
+      timedRender(id);
+    }
+
+    function timedPause(id) {
+      const s = timedState[id];
+      if (s.interval) clearInterval(s.interval);
+      s.interval = null;
+      timedRender(id);
+    }
+
+    function timedReset(id) {
+      const c = timedConfigs[id];
+      const s = timedState[id];
+      if (s.interval) clearInterval(s.interval);
+      timedState[id] = { phase: 'idle', remaining: c.work, set: 0, interval: null, targetTime: null };
+      timedRender(id);
+    }
+
+    // ─── INTERVAL-ONLY EXERCISES (Rep-Based) ───────────────────
+    // iw-biceps-main (ダンベルカール) を追加
+    const intervalConfigs = {
+      'iw-front-main':  { rest: 20, sets: 3 },
+      'iw-side-main':   { rest: 20, sets: 3 },
+      'iw-biceps-main': { rest: 20, sets: 3 },
+      'iw-push-main':   { rest: 20, sets: 3 },
+      'iw-wall-main':   { rest: 20, sets: 2 },
+    };
+    const intervalState = {};
+
+    function intervalInit(id) {
+      const c = intervalConfigs[id];
+      if (!intervalState[id]) {
+        intervalState[id] = { phase: 'idle', remaining: c.rest, set: 0, interval: null, targetTime: null };
+      }
+    }
+
+    function intervalRender(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const c = intervalConfigs[id];
+      const s = intervalState[id];
+      const isDone = s.set >= c.sets;
+
+      const mm = String(Math.floor(s.remaining / 60)).padStart(2,'0');
+      const ss2 = String(s.remaining % 60).padStart(2,'0');
+
+      let dots = '';
+      for (let i = 0; i < c.sets; i++) {
+        let dc = 'bg-slate-800';
+        if (i < s.set) dc = 'bg-brand-500';
+        else if (i === s.set && s.phase === 'rest') dc = 'bg-amber-500 animate-pulse';
+        dots += `<div class="w-2.5 h-2.5 rounded-full ${dc} transition-colors"></div>`;
+      }
+
+      let label = '', btns = '';
+      if (isDone) {
+        label = '<span class="text-emerald-400 font-bold">🎉 完了！</span>';
+        btns = `<button onclick="intervalReset('${id}')" class="w-full py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-transform active:scale-95 shadow">もう1周行う</button>`;
+      } else if (s.phase === 'rest') {
+        label = `<span class="text-amber-400 font-bold">☕ インターバル中</span> <span class="text-slate-400 font-mono text-[11px] ml-1">セット ${s.set} 完了</span>`;
+        btns = `<button onclick="intervalReset('${id}')" class="w-full py-2 px-3 rounded-xl bg-rose-950/60 hover:bg-rose-900 text-rose-400 font-bold text-xs transition-transform active:scale-95 border border-rose-800/50">リセット</button>`;
+      } else {
+        const curSet = s.set + 1;
+        label = `<span class="text-slate-300 font-semibold">セット ${curSet} / ${c.sets} 規定回数を実施</span>`;
+        btns = `<button onclick="intervalDone('${id}')" class="w-full py-2.5 px-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-xs transition-transform active:scale-95 shadow flex items-center justify-center gap-1">セット完了 ✓</button>`;
+      }
+
+      el.innerHTML = `
+        <div class="flex items-center justify-between text-xs mb-2">
+          <div>${label}</div>
+          <div class="flex gap-1">${dots}</div>
+        </div>
+        <div class="flex items-center justify-between mb-2 bg-slate-950/40 px-3 py-2 rounded-xl border border-slate-800/50">
+          <span class="text-xs text-slate-400">休憩残り時間:</span>
+          <span class="text-xl font-bold font-mono ${s.phase==='rest'?'text-amber-400':'text-slate-600'}">${s.phase === 'rest' ? `${mm}:${ss2}` : '−−:−−'}</span>
+        </div>
+        <div>${btns}</div>
+      `;
+
+      updateOverallProgress();
+    }
+
+    function intervalDone(id) {
+      initAudio();
+      const c = intervalConfigs[id];
+      const s = intervalState[id];
+
+      if (s.interval) clearInterval(s.interval);
+
+      s.set++;
+      if (s.set >= c.sets) {
+        s.phase = 'done';
+        s.remaining = 0;
+        vibrate([200, 80, 200, 80, 400]);
+        playBeep(1200, 0.3, 'triangle');
+        intervalRender(id);
+        return;
+      }
+
+      vibrate([200, 80, 200]);
+      playBeep(440, 0.2);
+      s.phase = 'rest';
+      s.remaining = c.rest;
+
+      s.targetTime = Date.now() + (s.remaining * 1000);
+
+      s.interval = setInterval(() => {
+        const now = Date.now();
+        const diff = Math.max(0, Math.ceil((s.targetTime - now) / 1000));
+
+        if (diff !== s.remaining) {
+          s.remaining = diff;
+
+          if (s.remaining <= 0) {
+            clearInterval(s.interval);
+            s.interval = null;
+            s.phase = 'work';
+            s.remaining = c.rest;
+            vibrate([100, 50, 300]);
+            playBeep(880, 0.2);
+          }
+          intervalRender(id);
+        }
+      }, 100);
+
+      intervalRender(id);
+    }
+
+    function intervalReset(id) {
+      const c = intervalConfigs[id];
+      const s = intervalState[id];
+      if (s.interval) clearInterval(s.interval);
+      intervalState[id] = { phase: 'idle', remaining: c.rest, set: 0, interval: null, targetTime: null };
+      intervalRender(id);
+    }
+
+    // ─── OVERALL PROGRESS TRACKER ────────────────────────────────
+    function updateOverallProgress() {
+      const activePane = document.querySelector('.pane:not(.hidden)');
+      if (!activePane) return;
+
+      const paneId = activePane.id;
+      let total = 0, completed = 0;
+
+      if (paneId === 'pane-train') {
+        const tKeys = ['tw-plank-main', 'tw-towel-main'];
+        const iKeys = ['iw-front-main', 'iw-side-main', 'iw-biceps-main', 'iw-push-main', 'iw-wall-main'];
+        
+        tKeys.forEach(k => {
+          total++;
+          if (timedState[k] && timedState[k].set >= timedConfigs[k].sets) completed++;
+        });
+        iKeys.forEach(k => {
+          total++;
+          if (intervalState[k] && intervalState[k].set >= intervalConfigs[k].sets) completed++;
+        });
+      } else if (paneId === 'pane-light') {
+        const tKeys = ['tw-plank-light', 'tw-towel-light'];
+        tKeys.forEach(k => {
+          total++;
+          if (timedState[k] && timedState[k].set >= timedConfigs[k].sets) completed++;
+        });
+      } else {
+        total = 0; completed = 0;
+      }
+
+      const textEl = document.getElementById('overall-progress-text');
+      const barEl = document.getElementById('overall-progress-bar');
+
+      if (total === 0) {
+        textEl.innerText = '情報参照モード';
+        barEl.style.width = '100%';
+      } else {
+        const pct = Math.round((completed / total) * 100);
+        textEl.innerText = `${completed} / ${total} 完了 (${pct}%)`;
+        barEl.style.width = pct + '%';
+      }
+    }
+
+    function resetPage(page) {
+      if (page === 'main') {
+        ['tw-plank-main','tw-towel-main'].forEach(timedReset);
+        ['iw-front-main','iw-side-main','iw-biceps-main','iw-push-main','iw-wall-main'].forEach(intervalReset);
+      } else {
+        ['tw-plank-light','tw-towel-light'].forEach(timedReset);
+      }
+    }
+
+    // ─── INITIALIZATION ─────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      Object.keys(timedConfigs).forEach(id => { timedInit(id); timedRender(id); });
+      Object.keys(intervalConfigs).forEach(id => { intervalInit(id); intervalRender(id); });
+      updateOverallProgress();
+    });
+  </script>
+</body>
+</html>
